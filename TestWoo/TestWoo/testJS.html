@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+
+    <div>
+        <h3>JS与iOS交互</h3>
+        <h4>JS页面获取iOS 系统图片</h4>
+    </div>
+
+
+    <div>
+
+
+            <input type="button" style="width: 50%;height: 5%;" id = "Button" value = "打开相机获取图片" >
+       
+
+    </div>
+
+
+    <div>
+        <img src="testImage.png" id="changeImage"style="width: 30%; height: 30%;" onclick="getIOSImage()"><!--src="图片的相对路径" 如果把html文件导入工程中，图片路径和OC一样只写图片名字和后缀就可以，（记得要先把图片添加到工程） 图片也可以实现按钮的方法getIOSImage -->
+    </div>
+
+<span id="iosParame" style="width: 200px; height: 50%; color:orange; font-size: 15px;"></span>
+
+
+
+        <script>
+            
+            window.onerror = function(err) {
+                log('window.onerror: ' + err)
+            }
+        
+        <!-- 申明交互 -->
+        function setupWebViewJavascriptBridge(callback) {
+            if (window.WebViewJavascriptBridge) { return callback(WebViewJavascriptBridge); }
+            if (window.WVJBCallbacks) { return window.WVJBCallbacks.push(callback); }
+            window.WVJBCallbacks = [callback];
+            var WVJBIframe = document.createElement('iframe');
+            WVJBIframe.style.display = 'none';
+            WVJBIframe.src = 'https://__bridge_loaded__';
+            document.documentElement.appendChild(WVJBIframe);
+            setTimeout(function() { document.documentElement.removeChild(WVJBIframe) }, 0)
+        }
+
+
+<!-- 处理交互  方法名要和ios内定义的对应-->
+            setupWebViewJavascriptBridge(function(bridge)
+                             {
+                             bridge.registerHandler('registerAction', function(data, responseCallback) {
+                                                    //处理oc给的传参
+                                                    <!--                                                            alert(data)-->
+                                                    
+                                                    document.getElementById('changeImage').src = data
+                                                    
+                                                    
+                                                    
+                                                    
+                                                    
+                                                    
+                        var responseData = { 'result':'handle success' }
+                                                    //处理完，回调传值给oc
+                        responseCallback(responseData)
+                                                    
+                                                    
+                                                    })
+                             
+                             
+                             
+                             
+                             var callbackButton = document.getElementById('Button')
+                             callbackButton.innerHTML = '点击我，我会调用oc的方法'
+                             callbackButton.onclick = function(e) {
+                             e.preventDefault()
+                             
+                             <!--处理 js 调用 oc -->
+                             bridge.callHandler('getImage', {'userId':'zhangsan','name': '章三'}, function(response) {
+                                                //处理oc过来的回调
+                                                alert('收到oc过来的回调:'+response)
+                                                })
+                             }
+                             
+                             
+                             
+                             
+                             
+                             
+                             })
+                             
+                             
+   
+   
+   
+<!--   -->
+<!--            var getIOSImage = function(){-->
+<!--                var parameter = {'title':'JS调OC','describe':'这里就是JS传给OC的参数'};-->
+<!--                // 在下面这里实现js 调用系统原生api-->
+<!--                window.iosDelegate.getImage(JSON.stringify(parameter));// 实现数据的 json 格式字符串-->
+<!--            }-->
+<!--            // 这里是 iOS调用js的方法-->
+<!--            function setImageWithPath(arguments){-->
+<!--                document.getElementById('changeImage').src = arguments['imagePath'];-->
+<!--                document.getElementById('iosParame').innerHTML = arguments['iosContent'];-->
+<!--            }-->
+        </script>
+
+
+</body>
+</html>
